@@ -56,7 +56,7 @@ class group extends domain {
      */
     protected $attributes = array(
         'id', 'courseid', 'idnumber', 'name', 'description', 'descriptionformat',
-        'enrolmentkey', 'picture', 'timecreated', 'timemodified'
+        'enrolmentkey', 'picture', 'timecreated', 'timemodified', 'visibility', 'participation'
     );
     /**
      * @var int
@@ -99,6 +99,9 @@ class group extends domain {
      *
      * @var array
      */
+    protected $visibility = 0;
+    protected $participation = 1;
+    
     private $members;
 
     /**
@@ -154,9 +157,12 @@ class group extends domain {
      */
     private function load_from_object(\stdclass $group) {
         foreach ($this->attributes as $attribute) {
+    foreach ($this->attributes as $attribute) {
+        if (property_exists($group, $attribute)) {
             $this->$attribute = $group->$attribute;
         }
     }
+}
 
     /**
      * @param \moodle_database $db
