@@ -156,8 +156,7 @@ class group extends domain {
      * @param \stdclass $group
      */
     private function load_from_object(\stdclass $group) {
-        foreach ($this->attributes as $attribute) {
-    foreach ($this->attributes as $attribute) {
+     foreach ($this->attributes as $attribute) {
         if (property_exists($group, $attribute)) {
             $this->$attribute = $group->$attribute;
         }
