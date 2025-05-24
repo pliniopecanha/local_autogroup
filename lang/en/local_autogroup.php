@@ -31,6 +31,8 @@ $string['pluginname']  = 'Local AutoGroup';
 // ... outras strings ...
 $string['customgroupname'] = 'Custom group name';
 $string['customgroupnamedesc'] = 'Optional: Specify a custom name for the group. If left empty, the group will be named after the profile field value.';
+$string['customgroupname'] = 'Nome personalizado para grupo';
+$string['customgroupnamedesc'] = 'Defina um nome personalizado para os grupos criados automaticamente.';
 
 // Course Settings.
 $string['actions'] = 'Actions';
