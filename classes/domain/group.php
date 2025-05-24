@@ -229,7 +229,7 @@ class group extends domain {
         return count($this->members);
     }
 
-    /**
+   /**
      * Adds this group to the application if it hasn't
      * been created already
      *
@@ -237,10 +237,19 @@ class group extends domain {
      */
     public function create() {
         if ($this->id == 0) {
-            $this->id = (int)\groups_create_group($this->as_object());
+            // Recupera nome customizado da configuração global
+            $pluginconfig = get_config('local_autogroup');
+            $customgroupname = isset($pluginconfig->customgroupname) ? trim($pluginconfig->customgroupname) : '';
+
+            // O nome padrão é o valor já setado no atributo name
+            $groupobj = $this->as_object();
+            if ($customgroupname !== '') {
+                $groupobj->name = $customgroupname;
+            }
+            $this->id = (int)\groups_create_group($groupobj);
         }
     }
-
+    
     /**
      * @param moodle_database $db
      * @return bool   whether this group is an autogroup or not
