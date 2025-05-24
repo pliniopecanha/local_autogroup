@@ -26,7 +26,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname']  = 'Auto Group';
+$string['pluginname']  = 'Local AutoGroup';
+
+// ... outras strings ...
+$string['customgroupname'] = 'Custom group name';
+$string['customgroupnamedesc'] = 'Optional: Specify a custom name for the group. If left empty, the group will be named after the profile field value.';
 
 // Course Settings.
 $string['actions'] = 'Actions';
