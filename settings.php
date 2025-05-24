@@ -40,7 +40,18 @@ if ($hassiteconfig) {
         'local_autogroup',
         get_string('pluginname', 'local_autogroup')
     );
+    
+    // Campo de nome personalizado do grupo
+    $settings->add(new admin_setting_configtext(
+        'local_autogroup/customgroupname',
+        get_string('customgroupname', 'local_autogroup'),
+        get_string('customgroupnamedesc', 'local_autogroup'),
+        '', // Valor padrão
+        PARAM_TEXT
+    ));
 
+    $ADMIN->add('localplugins', $settings);
+}
     // General settings.
     $settings->add(
         new admin_setting_heading(
