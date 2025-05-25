@@ -32,7 +32,7 @@ use local_autogroup\domain;
 use local_autogroup\form;
 
 /**
- * Class course_settings
+ * Class autogroup_set_settings
  * @package local_autogroup\form
  */
 class autogroup_set_settings extends form {
@@ -43,6 +43,12 @@ class autogroup_set_settings extends form {
 
     /** @var \local_autogroup\local\autogroup_set|null */
     protected $autogroup_set;
+
+    /**
+     * Evita deprecated property do PHP 8.2+
+     * @var mixed
+     */
+    protected $groupsetdata;
 
     public function definition() {
         $this->autogroup_set = $this->get_submitted_data();
@@ -88,9 +94,7 @@ class autogroup_set_settings extends form {
         if (!empty($this->_customdata->sortconfig) && isset($this->_customdata->sortconfig->filtervalue)) {
             $filtervalue = $this->_customdata->sortconfig->filtervalue;
         }
-        if ($filtervalue !== '') {
-            $mform->setDefault('groupby_filtervalue', $filtervalue);
-        }
+        $mform->setDefault('groupby_filtervalue', $filtervalue); // Corrigido: Sempre preenche (se vazio, deixa em branco)
     }
 
     /**
