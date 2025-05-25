@@ -138,22 +138,13 @@ class autogroup_set_settings extends form {
      */
     private function add_custom_groupname_option() {
         $mform = &$this->_form;
-        $mform->addElement('text', 'customgroupname_course', get_string('customgroupname_course', 'local_autogroup'));
-        $mform->setType('customgroupname_course', PARAM_TEXT);
-        $mform->addHelpButton('customgroupname_course', 'customgroupname_course', 'local_autogroup');
+        $mform->addElement('text', 'customgroupname', get_string('customgroupname_course', 'local_autogroup'));
+        $mform->setType('customgroupname', PARAM_TEXT);
+        $mform->addHelpButton('customgroupname', 'customgroupname_course', 'local_autogroup');
 
-        // Tenta preencher o valor salvo, se existir.
-        $courseid = 0;
-        if (method_exists($this->_customdata, 'get_courseid')) {
-            $courseid = $this->_customdata->get_courseid();
-        } elseif (isset($this->_customdata->courseid)) {
-            $courseid = $this->_customdata->courseid;
-        }
-        if ($courseid) {
-            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $courseid);
-            if ($customgroupname !== false) {
-                $mform->setDefault('customgroupname_course', $customgroupname);
-            }
+        // Preenche o valor salvo, se existir.
+        if (isset($this->_customdata->customgroupname)) {
+            $mform->setDefault('customgroupname', $this->_customdata->customgroupname);
         }
     }
 
