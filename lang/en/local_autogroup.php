@@ -37,6 +37,8 @@ $string['customgroupname_course'] = 'Nome personalizado para grupo (nível de cu
 $string['customgroupname_course_help'] = 'Defina um nome padrão para os grupos criados automaticamente neste curso. Tem prioridade sobre a configuração global.';
 $string['groupby_filtervalue'] = 'Valor para filtro do campo agrupador';
 $string['groupby_filtervalue_help'] = 'Se preenchido, somente usuários cujo valor do campo selecionado em "Group by" coincida exatamente com este valor serão agrupados.';
+$string['groupby_filtervalue'] = 'Valor para filtro do campo agrupador';
+$string['customgroupname_course'] = 'Nome personalizado para grupo (nível de curso)';
 
 // Course Settings.
 $string['actions'] = 'Actions';
