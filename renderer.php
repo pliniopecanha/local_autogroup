@@ -101,14 +101,8 @@ class local_autogroup_renderer extends plugin_renderer_base {
         // Get the grouping by text which is used in the edit screen.
         $row [] = ucfirst($groupset->grouping_by_text());
 
-        // DEBUG: Veja como está o sortconfig!
-        echo '<pre style="background: #ffe; color: #000; border: 1px solid #ccc; padding: 3px;">sortconfig: ';
-        var_dump($groupset->sortconfig);
-        echo '</pre>';
-
         // Valor para filtro do campo agrupador
         $filtervalue = '-';
-        // Tenta acessar diretamente, porque o var_dump mostrou que existe como objeto
         if (is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
             $filtervalue = $groupset->sortconfig->filtervalue;
         } elseif (is_string($groupset->sortconfig)) {
@@ -117,20 +111,17 @@ class local_autogroup_renderer extends plugin_renderer_base {
                 $filtervalue = $decoded->filtervalue;
             }
         }
-
-        // DEBUG: Veja o valor que será exibido na tabela
-        echo '<pre style="background: #cff; color: #000; border: 1px solid #099; padding: 3px;">filtervalue: ';
-        var_dump($filtervalue);
-        echo '</pre>';
-
         $row[] = $filtervalue;
 
         // Nome personalizado para grupo (nível de curso)
         $customgroupname = '-';
-        if (!empty($groupset->courseid)) {
-            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
-            if (!$customgroupname) {
-                $customgroupname = '-';
+        // Tenta buscar no objeto e, se não houver, busca no config do plugin
+        if (isset($groupset->customgroupname) && !empty($groupset->customgroupname)) {
+            $customgroupname = $groupset->customgroupname;
+        } elseif (!empty($groupset->courseid)) {
+            $customgroupname_config = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
+            if (!empty($customgroupname_config)) {
+                $customgroupname = $customgroupname_config;
             }
         }
         $row[] = $customgroupname;
