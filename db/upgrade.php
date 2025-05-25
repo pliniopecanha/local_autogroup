@@ -95,5 +95,17 @@ function xmldb_local_autogroup_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023040600, 'local', 'autogroup');
     }
 
+    // ADICIONAR NOVO CAMPO customgroupname À TABELA local_autogroup_sets
+    if ($oldversion < 2025052500) { // Utilize um número de versão maior que seu version.php atual
+        $table = new xmldb_table('local_autogroup_sets');
+        $field = new xmldb_field('customgroupname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'timemodified');
+        // Adiciona o campo caso não exista
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Savepoint do upgrade
+        upgrade_plugin_savepoint(true, 2025052500, 'local', 'autogroup');
+    }
+
     return true;
 }
