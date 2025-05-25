@@ -33,7 +33,7 @@ use local_autogroup\form;
 use \html_writer;
 
 /**
- * Class course_settings
+ * Class autogroup_set_delete
  * @package local_autogroup\form
  */
 class autogroup_set_delete extends form {
@@ -41,6 +41,12 @@ class autogroup_set_delete extends form {
      * @type domain\autogroup_set
      */
     protected $_customdata;
+
+    /**
+     * Evita deprecated property do PHP 8.2+
+     * @var mixed
+     */
+    protected $groupsetdata;
 
     /**
      *
@@ -66,7 +72,6 @@ class autogroup_set_delete extends form {
             $mform->addElement('selectyesno', 'cleanupold', get_string('cleanupold', 'local_autogroup'));
             $mform->setDefault('cleanupold', 1);
         }
-
     }
 
     /**
@@ -76,5 +81,4 @@ class autogroup_set_delete extends form {
         $data = array();
         $this->set_data($data);
     }
-
 }
