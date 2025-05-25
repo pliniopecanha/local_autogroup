@@ -84,12 +84,18 @@ switch ($action) {
         die();
 }
 
+$context = context_course::instance($courseid);
+
+// >>>>>>>>>>>>>>>> CONTEXT PATCH <<<<<<<<<<<<<<<<
+// O contexto precisa ser setado ANTES de qualquer uso de $PAGE ou funções dependentes.
+// Por segurança, coloque o set_context antes de qualquer outra referência a $PAGE ou instância de forms.
+$PAGE->set_context($context);
+// >>>>>>>>>>>>>>>> CONTEXT PATCH <<<<<<<<<<<<<<<<
+
 // Set the sort module if it doesn't match.
 if ($sortmodule && $groupset->sortmoduleshortname != $sortmodule) {
     $groupset->set_sort_module($sortmodule);
 }
-
-$context = context_course::instance($courseid);
 
 require_capability('local/autogroup:managecourse', $context);
 
@@ -97,7 +103,6 @@ $course = $DB->get_record('course', array('id' => $courseid));
 
 $heading = \get_string('coursesettingstitle', 'local_autogroup', $course->shortname);
 
-$PAGE->set_context($context);
 $PAGE->set_url(local_autogroup_renderer::URL_COURSE_SETTINGS, array('courseid' => $courseid));
 $PAGE->set_title($heading);
 $PAGE->set_heading($heading);
