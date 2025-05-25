@@ -113,10 +113,13 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
         $row[] = $filtervalue;
 
-        // TESTE 2: mostrar valor do config diretamente na coluna "Nome personalizado para grupo (nível de curso)"
-        $configkey = 'customgroupname_course_' . $groupset->courseid;
-        $configval = get_config('local_autogroup', $configkey);
-        $row[] = $configval;
+        // Nome personalizado para grupo (nível de curso) - prioriza atributo do objeto, senão busca no config
+        if (isset($groupset->customgroupname) && $groupset->customgroupname !== '' && $groupset->customgroupname !== null) {
+            $customgroupname = $groupset->customgroupname;
+        } else {
+            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
+        }
+        $row[] = ($customgroupname !== false && $customgroupname !== null && $customgroupname !== '') ? (string)$customgroupname : '-';
 
         // Get the count of groups.
         $row [] = $groupset->get_group_count();
