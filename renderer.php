@@ -81,8 +81,8 @@ class local_autogroup_renderer extends plugin_renderer_base {
         $table->head = array(
             get_string('set_type', 'local_autogroup'),
             get_string('set_groupby', 'local_autogroup'),
-            get_string('groupby_filtervalue', 'local_autogroup'),     // NOVA COLUNA
-            get_string('customgroupname_course', 'local_autogroup'), // NOVA COLUNA
+            get_string('groupby_filtervalue', 'local_autogroup'),
+            get_string('customgroupname_course', 'local_autogroup'),
             get_string('set_groups', 'local_autogroup'),
             get_string('set_roles', 'local_autogroup'),
             get_string('actions', 'local_autogroup')
@@ -108,11 +108,17 @@ class local_autogroup_renderer extends plugin_renderer_base {
 
         // Valor para filtro do campo agrupador
         $filtervalue = '-';
-        if (!empty($groupset->sortconfig) && is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
+        // Tenta acessar diretamente, porque o var_dump mostrou que existe como objeto
+        if (is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
             $filtervalue = $groupset->sortconfig->filtervalue;
+        } elseif (is_string($groupset->sortconfig)) {
+            $decoded = json_decode($groupset->sortconfig);
+            if (is_object($decoded) && isset($decoded->filtervalue)) {
+                $filtervalue = $decoded->filtervalue;
+            }
         }
 
-        // DEBUG: Veja o valor que será exibido
+        // DEBUG: Veja o valor que será exibido na tabela
         echo '<pre style="background: #cff; color: #000; border: 1px solid #099; padding: 3px;">filtervalue: ';
         var_dump($filtervalue);
         echo '</pre>';
