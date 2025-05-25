@@ -102,7 +102,7 @@ class local_autogroup_renderer extends plugin_renderer_base {
         $row [] = ucfirst($groupset->grouping_by_text());
 
         // DEBUG: Veja como está o sortconfig!
-        echo '<pre style="background: #ffe; color: #000; border: 1px solid #ccc; padding: 3px;">';
+        echo '<pre style="background: #ffe; color: #000; border: 1px solid #ccc; padding: 3px;">sortconfig: ';
         var_dump($groupset->sortconfig);
         echo '</pre>';
 
@@ -111,6 +111,12 @@ class local_autogroup_renderer extends plugin_renderer_base {
         if (!empty($groupset->sortconfig) && is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
             $filtervalue = $groupset->sortconfig->filtervalue;
         }
+
+        // DEBUG: Veja o valor que será exibido
+        echo '<pre style="background: #cff; color: #000; border: 1px solid #099; padding: 3px;">filtervalue: ';
+        var_dump($filtervalue);
+        echo '</pre>';
+
         $row[] = $filtervalue;
 
         // Nome personalizado para grupo (nível de curso)
