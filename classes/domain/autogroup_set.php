@@ -434,9 +434,38 @@ class autogroup_set extends domain {
     public function verify_user_group_membership(\stdclass $user, \moodle_database $db, \context_course $context) {
         $eligiblegroups = array();
 
+        // --- INÍCIO PATCH FILTRO POR VALOR DE GROUP BY ---
+        $filtervalue = '';
+        if (isset($this->sortconfig->filtervalue)) {
+            $filtervalue = trim($this->sortconfig->filtervalue);
+        }
+        // --- FIM PATCH FILTRO POR VALOR DE GROUP BY ---
+
         // We only want to check with the sorting module if this user has the correct role assignment.
         if ($this->user_is_eligible_in_context($user->id, $db, $context)) {
             // An array of strings from the sort module.
+
+            // --- INÍCIO PATCH FILTRO POR VALOR DE GROUP BY ---
+            // Obtém o valor do campo do usuário de acordo com o groupby configurado
+            $usergroupbyvalue = null;
+            if (!empty($this->sortconfig->field)) {
+                $fieldname = $this->sortconfig->field;
+                if (isset($user->$fieldname)) {
+                    $usergroupbyvalue = $user->$fieldname;
+                } elseif (isset($user->profile_field[$fieldname])) {
+                    $usergroupbyvalue = $user->profile_field[$fieldname];
+                }
+            }
+
+            // Aplica o filtro: só inclui o usuário se o valor do campo for igual ao filtro
+            if ($filtervalue !== '' && $usergroupbyvalue !== null) {
+                if ($usergroupbyvalue !== $filtervalue) {
+                    // Ignora este usuário - não agrupa
+                    return true;
+                }
+            }
+            // --- FIM PATCH FILTRO POR VALOR DE GROUP BY ---
+
             $eligiblegroups = $this->sortmodule->eligible_groups_for_user($user);
         }
 
