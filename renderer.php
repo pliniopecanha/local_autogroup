@@ -101,30 +101,27 @@ class local_autogroup_renderer extends plugin_renderer_base {
         // Get the grouping by text which is used in the edit screen.
         $row [] = ucfirst($groupset->grouping_by_text());
 
+        // DEBUG: Veja como está o sortconfig!
+        echo '<pre style="background: #ffe; color: #000; border: 1px solid #ccc; padding: 3px;">';
+        var_dump($groupset->sortconfig);
+        echo '</pre>';
+
         // Valor para filtro do campo agrupador
-        $filtervalue = '';
-        if (!empty($groupset->sortconfig)) {
-            // sortconfig pode ser um objeto ou um array, dependendo do carregamento
-            if (is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
-                $filtervalue = $groupset->sortconfig->filtervalue;
-            } elseif (is_array($groupset->sortconfig) && isset($groupset->sortconfig['filtervalue'])) {
-                $filtervalue = $groupset->sortconfig['filtervalue'];
-            } elseif (is_string($groupset->sortconfig)) {
-                // Caso raro: sortconfig veio como json string, tentar decodificar
-                $sortconfig = json_decode($groupset->sortconfig);
-                if (is_object($sortconfig) && isset($sortconfig->filtervalue)) {
-                    $filtervalue = $sortconfig->filtervalue;
-                }
-            }
+        $filtervalue = '-';
+        if (!empty($groupset->sortconfig) && is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
+            $filtervalue = $groupset->sortconfig->filtervalue;
         }
-        $row[] = ($filtervalue !== '' && $filtervalue !== null) ? $filtervalue : '-'; // mostra "-" se vazio
+        $row[] = $filtervalue;
 
         // Nome personalizado para grupo (nível de curso)
-        $customgroupname = '';
+        $customgroupname = '-';
         if (!empty($groupset->courseid)) {
             $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
+            if (!$customgroupname) {
+                $customgroupname = '-';
+            }
         }
-        $row[] = ($customgroupname !== '' && $customgroupname !== null) ? $customgroupname : '-'; // mostra "-" se vazio
+        $row[] = $customgroupname;
 
         // Get the count of groups.
         $row [] = $groupset->get_group_count();
