@@ -127,6 +127,15 @@ if ($form->is_cancelled()) {
 }
 if ($data = $form->get_data()) {
 
+    // Salva o nome personalizado do grupo a nível de curso, se informado.
+    if (isset($data->customgroupname_course) && $courseid > 0) {
+        if (trim($data->customgroupname_course) !== '') {
+            set_config('customgroupname_course_' . $courseid, trim($data->customgroupname_course), 'local_autogroup');
+        } else {
+            unset_config('customgroupname_course_' . $courseid, 'local_autogroup');
+        }
+    }
+
     // Data relevant to both form types.
     $updategroupmembership = false;
     $cleanupold = isset($data->cleanupold) ? (bool)$data->cleanupold : true;
