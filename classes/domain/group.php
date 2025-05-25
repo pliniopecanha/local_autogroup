@@ -156,12 +156,12 @@ class group extends domain {
      * @param \stdclass $group
      */
     private function load_from_object(\stdclass $group) {
-     foreach ($this->attributes as $attribute) {
-        if (property_exists($group, $attribute)) {
-            $this->$attribute = $group->$attribute;
+        foreach ($this->attributes as $attribute) {
+            if (property_exists($group, $attribute)) {
+                $this->$attribute = $group->$attribute;
+            }
         }
     }
-}
 
     /**
      * @param \moodle_database $db
@@ -237,9 +237,15 @@ class group extends domain {
      */
     public function create() {
         if ($this->id == 0) {
-            // Recupera nome customizado da configuração global
-            $pluginconfig = get_config('local_autogroup');
-            $customgroupname = isset($pluginconfig->customgroupname) ? trim($pluginconfig->customgroupname) : '';
+            // Primeiro tenta pegar o nome do grupo a nível de curso.
+            $customgroupname = '';
+            if (!empty($this->courseid)) {
+                $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $this->courseid);
+            }
+            if (empty($customgroupname)) {
+                $pluginconfig = get_config('local_autogroup');
+                $customgroupname = isset($pluginconfig->customgroupname) ? trim($pluginconfig->customgroupname) : '';
+            }
 
             // O nome padrão é o valor já setado no atributo name
             $groupobj = $this->as_object();
