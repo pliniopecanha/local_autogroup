@@ -95,6 +95,9 @@ class local_autogroup_renderer extends plugin_renderer_base {
     private function groupsets_table_group(local_autogroup\domain\autogroup_set $groupset) {
         $row = array();
 
+        // DEBUG: Exibe o objeto do groupset para análise (comente depois do teste)
+        echo "<pre style='color: red; background: #fff;'>"; var_dump($groupset); echo "</pre>";
+
         // Get the groupset type.
         $row [] = ucfirst(local_autogroup_sanitise_sort_module_name($groupset->sortmodule));
 
