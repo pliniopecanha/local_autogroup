@@ -41,21 +41,16 @@ class autogroup_set_settings extends form {
      */
     protected $_customdata;
 
-    /**
-     *
-     */
-         /** @var \local_autogroup\local\autogroup_set|null */
+    /** @var \local_autogroup\local\autogroup_set|null */
     protected $autogroup_set;
 
     public function definition() {
         $this->autogroup_set = $this->get_submitted_data();
 
         $this->add_group_by_options();
-
         $this->add_field_delimiter_options();
-
         $this->add_role_options();
-
+        $this->add_custom_groupname_option(); // <-- ADICIONADO AQUI
         $this->add_action_buttons();
     }
 
@@ -114,11 +109,31 @@ class autogroup_set_settings extends form {
     }
 
     /**
-     *
+     * Adiciona o campo para nome personalizado de grupo a nível de curso.
      */
+    private function add_custom_groupname_option() {
+        $mform = &$this->_form;
+        $mform->addElement('text', 'customgroupname_course', get_string('customgroupname_course', 'local_autogroup'));
+        $mform->setType('customgroupname_course', PARAM_TEXT);
+        $mform->addHelpButton('customgroupname_course', 'customgroupname_course', 'local_autogroup');
+
+        // Tenta preencher o valor salvo, se existir.
+        $courseid = 0;
+        if (method_exists($this->_customdata, 'get_courseid')) {
+            $courseid = $this->_customdata->get_courseid();
+        } elseif (isset($this->_customdata->courseid)) {
+            $courseid = $this->_customdata->courseid;
+        }
+        if ($courseid) {
+            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $courseid);
+            if ($customgroupname !== false) {
+                $mform->setDefault('customgroupname_course', $customgroupname);
+            }
+        }
+    }
+
     public function extract_data() {
         $data = array();
         $this->set_data($data);
     }
-
 }
