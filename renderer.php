@@ -120,8 +120,9 @@ class local_autogroup_renderer extends plugin_renderer_base {
         } elseif (!empty($groupset->courseid)) {
             $configkey = 'customgroupname_course_' . $groupset->courseid;
             $configval = get_config('local_autogroup', $configkey);
+            // Aceita qualquer valor definido, inclusive "0", "001", etc.
             if ($configval !== false && $configval !== null) {
-                $customgroupname = $configval;
+                $customgroupname = (string)$configval;
             }
         }
         $row[] = $customgroupname;
@@ -144,5 +145,4 @@ class local_autogroup_renderer extends plugin_renderer_base {
 
         return $row;
     }
-
 }
