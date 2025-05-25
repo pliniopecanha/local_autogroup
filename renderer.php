@@ -113,30 +113,13 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
         $row[] = $filtervalue;
 
-        // Nome personalizado para grupo (nível de curso) - DEBUG PRINTS
-        echo '<pre style="background:#8ff;">courseid: ';
-        var_dump($groupset->courseid);
-        echo '</pre>';
-
-        echo '<pre style="background:#fda;">groupset->customgroupname: ';
-        if (isset($groupset->customgroupname)) {
-            var_dump($groupset->customgroupname);
-        } else {
-            echo 'NÃO EXISTE';
-        }
-        echo '</pre>';
-
-        $configkey = 'customgroupname_course_' . $groupset->courseid;
-        $configval = get_config('local_autogroup', $configkey);
-        echo '<pre style="background:#ff8;">config('.$configkey.'): ';
-        var_dump($configval);
-        echo '</pre>';
-
+        // Nome personalizado para grupo (nível de curso)
         $customgroupname = '-';
         if (isset($groupset->customgroupname) && $groupset->customgroupname !== '' && $groupset->customgroupname !== null) {
             $customgroupname = $groupset->customgroupname;
         } elseif (!empty($groupset->courseid)) {
-            // CORREÇÃO: Aceita valores como "0", "001", etc.
+            $configkey = 'customgroupname_course_' . $groupset->courseid;
+            $configval = get_config('local_autogroup', $configkey);
             if ($configval !== false && $configval !== null) {
                 $customgroupname = $configval;
             }
