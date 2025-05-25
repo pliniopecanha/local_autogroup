@@ -12,6 +12,7 @@
                 <FIELD NAME="sortconfig" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded module configuration" />
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" />
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" />
+                <FIELD NAME="customgroupname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Custom group name for this set" />
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
