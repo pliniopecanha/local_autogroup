@@ -58,7 +58,7 @@ class autogroup_set extends domain {
      * @var array
      */
     protected $attributes = array(
-        'id', 'courseid', 'sortmodule', 'sortconfig', 'timecreated', 'timemodified'
+        'id', 'courseid', 'sortmodule', 'sortconfig', 'timecreated', 'timemodified', 'customgroupname'
     );
     /**
      * @var int
@@ -88,6 +88,10 @@ class autogroup_set extends domain {
      * @var int
      */
     protected $timemodified = 0;
+    /**
+     * @var string|null
+     */
+    protected $customgroupname = null;
     /**
      * @var array
      */
@@ -162,6 +166,9 @@ class autogroup_set extends domain {
         }
         if (isset($autogroupset->timemodified)) {
             $this->timemodified = $autogroupset->timemodified;
+        }
+        if (isset($autogroupset->customgroupname)) {
+            $this->customgroupname = $autogroupset->customgroupname;
         }
     }
 
