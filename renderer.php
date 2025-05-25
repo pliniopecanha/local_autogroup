@@ -113,15 +113,35 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
         $row[] = $filtervalue;
 
-        // Nome personalizado para grupo (nível de curso)
+        // Nome personalizado para grupo (nível de curso) - DEBUG PRINTS ADDED!
+        // Debug do courseid
+        echo '<pre style="background:#8ff;">courseid: ';
+        var_dump($groupset->courseid);
+        echo '</pre>';
+
+        // Debug ver se existe propriedade customgroupname no objeto
+        echo '<pre style="background:#fda;">groupset->customgroupname: ';
+        if (isset($groupset->customgroupname)) {
+            var_dump($groupset->customgroupname);
+        } else {
+            echo 'NÃO EXISTE';
+        }
+        echo '</pre>';
+
+        // Debug do config salvo
+        $configkey = 'customgroupname_course_' . $groupset->courseid;
+        $configval = get_config('local_autogroup', $configkey);
+        echo '<pre style="background:#ff8;">config('.$configkey.'): ';
+        var_dump($configval);
+        echo '</pre>';
+
         $customgroupname = '-';
         // Tenta buscar no objeto e, se não houver, busca no config do plugin
         if (isset($groupset->customgroupname) && !empty($groupset->customgroupname)) {
             $customgroupname = $groupset->customgroupname;
         } elseif (!empty($groupset->courseid)) {
-            $customgroupname_config = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
-            if (!empty($customgroupname_config)) {
-                $customgroupname = $customgroupname_config;
+            if (!empty($configval)) {
+                $customgroupname = $configval;
             }
         }
         $row[] = $customgroupname;
