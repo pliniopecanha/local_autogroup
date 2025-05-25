@@ -33,6 +33,8 @@ $string['customgroupname'] = 'Custom group name';
 $string['customgroupnamedesc'] = 'Optional: Specify a custom name for the group. If left empty, the group will be named after the profile field value.';
 $string['customgroupname'] = 'Nome personalizado para grupo';
 $string['customgroupnamedesc'] = 'Defina um nome personalizado para os grupos criados automaticamente.';
+$string['customgroupname_course'] = 'Nome personalizado para grupo (nível de curso)';
+$string['customgroupname_course_help'] = 'Defina um nome padrão para os grupos criados automaticamente neste curso. Tem prioridade sobre a configuração global.';
 
 // Course Settings.
 $string['actions'] = 'Actions';
