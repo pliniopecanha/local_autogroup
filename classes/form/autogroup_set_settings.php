@@ -48,6 +48,8 @@ class autogroup_set_settings extends form {
         $this->autogroup_set = $this->get_submitted_data();
 
         $this->add_group_by_options();
+        // NOVO: adiciona campo de filtro logo após groupby
+        $this->add_groupby_filtervalue_option();
         $this->add_field_delimiter_options();
         $this->add_role_options();
         $this->add_custom_groupname_option(); // <-- ADICIONADO AQUI
@@ -69,6 +71,25 @@ class autogroup_set_settings extends form {
             // Offer to preserve existing groups.
             $mform->addElement('selectyesno', 'cleanupold', get_string('cleanupold', 'local_autogroup'));
             $mform->setDefault('cleanupold', 1);
+        }
+    }
+
+    /**
+     * Novo campo: valor de filtro para o campo Group by.
+     */
+    private function add_groupby_filtervalue_option() {
+        $mform = &$this->_form;
+        $mform->addElement('text', 'groupby_filtervalue', get_string('groupby_filtervalue', 'local_autogroup'));
+        $mform->setType('groupby_filtervalue', PARAM_TEXT);
+        $mform->addHelpButton('groupby_filtervalue', 'groupby_filtervalue', 'local_autogroup');
+
+        // Tenta preencher o valor salvo, se existir, em sortconfig.
+        $filtervalue = '';
+        if (!empty($this->_customdata->sortconfig) && isset($this->_customdata->sortconfig->filtervalue)) {
+            $filtervalue = $this->_customdata->sortconfig->filtervalue;
+        }
+        if ($filtervalue !== '') {
+            $mform->setDefault('groupby_filtervalue', $filtervalue);
         }
     }
 
