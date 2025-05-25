@@ -54,6 +54,16 @@ class autogroup_set extends domain {
     // ... [demais propriedades e métodos permanecem iguais] ...
 
     /**
+     * Define o courseid deste conjunto de autogroup.
+     * Necessário para compatibilidade com edit.php.
+     */
+    public function set_course($courseid) {
+        if (is_numeric($courseid) && (int)$courseid > 0) {
+            $this->courseid = $courseid;
+        }
+    }
+
+    /**
      * @param \stdclass $user
      * @param \moodle_database $db
      * @param \context_course $context
