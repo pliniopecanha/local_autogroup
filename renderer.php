@@ -81,6 +81,8 @@ class local_autogroup_renderer extends plugin_renderer_base {
         $table->head = array(
             get_string('set_type', 'local_autogroup'),
             get_string('set_groupby', 'local_autogroup'),
+            get_string('groupby_filtervalue', 'local_autogroup'),     // NOVA COLUNA
+            get_string('customgroupname_course', 'local_autogroup'), // NOVA COLUNA
             get_string('set_groups', 'local_autogroup'),
             get_string('set_roles', 'local_autogroup'),
             get_string('actions', 'local_autogroup')
@@ -98,6 +100,20 @@ class local_autogroup_renderer extends plugin_renderer_base {
 
         // Get the grouping by text which is used in the edit screen.
         $row [] = ucfirst($groupset->grouping_by_text());
+
+        // NOVO: Valor para filtro do campo agrupador
+        $filtervalue = '';
+        if (!empty($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
+            $filtervalue = $groupset->sortconfig->filtervalue;
+        }
+        $row[] = $filtervalue;
+
+        // NOVO: Nome personalizado para grupo (nível de curso)
+        $customgroupname = '';
+        if (!empty($groupset->courseid)) {
+            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
+        }
+        $row[] = $customgroupname;
 
         // Get the count of groups.
         $row [] = $groupset->get_group_count();
