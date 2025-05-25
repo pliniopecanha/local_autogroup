@@ -113,13 +113,13 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
         $row[] = $filtervalue;
 
-        // Nome personalizado para grupo (nível de curso) - prioriza atributo do objeto, senão busca no config
+        // Nome personalizado para grupo (nível de curso): prioriza valor do objeto, senão deixará vazio ou '-'.
         if (isset($groupset->customgroupname) && $groupset->customgroupname !== '' && $groupset->customgroupname !== null) {
             $customgroupname = $groupset->customgroupname;
         } else {
-            $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $groupset->courseid);
+            $customgroupname = '-';
         }
-        $row[] = ($customgroupname !== false && $customgroupname !== null && $customgroupname !== '') ? (string)$customgroupname : '-';
+        $row[] = (string)$customgroupname;
 
         // Get the count of groups.
         $row [] = $groupset->get_group_count();
