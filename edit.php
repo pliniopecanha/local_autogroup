@@ -160,9 +160,14 @@ if ($data = $form->get_data()) {
             $options->delimiter = $data->delimitedby;
             $updated = true;
         }
+        // NOVO: Salva o filtro do campo groupby_filtervalue, se informado
+        if (isset($data->groupby_filtervalue)) {
+            $options->filtervalue = trim($data->groupby_filtervalue);
+            $updated = true; // Opcional: considere 'updated' só se o valor mudou, se quiser
+        }
 
         if ($updated) {
-            // User has selected another option.
+            // User has selected another option or filtro.
             $groupset->set_options($options);
             $groupset->save($DB, $cleanupold);
 
