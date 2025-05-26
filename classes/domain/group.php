@@ -204,7 +204,6 @@ class group extends domain {
      * @return bool true if user has just been removed, false otherwise.
      */
     public function ensure_user_is_not_member($userid) {
-        // Do not allow autogroup to remove this User if they were manually assigned to group.
         $pluginconfig = get_config('local_autogroup');
         if ($pluginconfig->preservemanual) {
             global $DB;
@@ -237,21 +236,9 @@ class group extends domain {
      */
     public function create() {
         if ($this->id == 0) {
-            // Primeiro tenta pegar o nome do grupo a nível de curso.
-            $customgroupname = '';
-            if (!empty($this->courseid)) {
-                $customgroupname = get_config('local_autogroup', 'customgroupname_course_' . $this->courseid);
-            }
-            if (empty($customgroupname)) {
-                $pluginconfig = get_config('local_autogroup');
-                $customgroupname = isset($pluginconfig->customgroupname) ? trim($pluginconfig->customgroupname) : '';
-            }
-
-            // O nome padrão é o valor já setado no atributo name
+            // O nome do grupo já deve estar corretamente em $this->name!
+            // Não busca mais get_config, apenas usa o valor já setado.
             $groupobj = $this->as_object();
-            if ($customgroupname !== '') {
-                $groupobj->name = $customgroupname;
-            }
             $this->id = (int)\groups_create_group($groupobj);
         }
     }
