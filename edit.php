@@ -157,8 +157,8 @@ if ($data = $form->get_data()) {
         $groupset->verify_user_group_membership($user, $DB, $context);
     }
 
-    // Redireciona após salvar.
-    redirect($returnurl);
+    // Redireciona para a página de gerenciamento com mensagem de sucesso!
+    redirect($aborturl, get_string('changessaved'), 2);
 }
 
 echo $OUTPUT->header();
