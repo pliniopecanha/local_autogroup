@@ -539,12 +539,12 @@ class autogroup_set extends domain {
         // Firstly run through existing groups and check for matches.
         foreach ($this->groups as $group) {
             if ($group->idnumber == $idnumber) {
-
-                if ($group->name != $groupname) {
-                    $group->name = $groupname;
+                // Se o nome do grupo mudou, atualize
+                $expectedname = !empty($this->customgroupname) ? $this->customgroupname : $groupname;
+                if ($group->name != $expectedname) {
+                    $group->name = $expectedname;
                     $group->update();
                 }
-
                 return [$group, false];
             }
         }
@@ -557,7 +557,8 @@ class autogroup_set extends domain {
         // If we don't find a match, create a new group.
         $data = new \stdclass();
         $data->id = 0;
-        $data->name = $groupname;
+        // Use o customgroupname se existir, senão nome padrão
+        $data->name = !empty($this->customgroupname) ? $this->customgroupname : $groupname;
         $data->idnumber = $idnumber;
         $data->courseid = $this->courseid;
         $data->description = '';
