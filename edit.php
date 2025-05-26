@@ -32,7 +32,7 @@ require_once($CFG->dirroot.'/local/autogroup/renderer.php');
 use local_autogroup\domain;
 use local_autogroup\form;
 
-$action   = required_param('action', PARAM_ALPHA); // edit|delete
+$action   = required_param('action', PARAM_ALPHA); // add|edit|delete
 $courseid = required_param('courseid', PARAM_INT);
 $sortmodule = optional_param('sortmodule', '', PARAM_TEXT);
 $gsid     = optional_param('gsid', 0, PARAM_INT);
@@ -60,17 +60,29 @@ if ($gsid) {
     }
 }
 
-// Corrige: Sempre inclui courseid, gsid e sortmodule nos parâmetros de retorno.
+// Parâmetros de retorno para as ações, sempre mantendo todos os contextos.
 $returnparams = array(
     'courseid' => $courseid,
     'sortmodule' => $sortmodule,
 );
-if ($groupset->exists()) {
-    $returnparams['gsid'] = $groupset->id;
-}
-$returnparams['action'] = 'edit';
 
-$returnurl = new moodle_url(local_autogroup_renderer::URL_COURSE_SETTINGS, array('courseid' => $courseid));
+if ($gsid) {
+    $returnparams['gsid'] = $gsid;
+}
+
+// Ajuste: define corretamente o action para o returnurl
+if ($action == 'add') {
+    $returnparams['action'] = 'add';
+} elseif ($action == 'edit') {
+    $returnparams['action'] = 'edit';
+} elseif ($action == 'delete') {
+    $returnparams['action'] = 'delete';
+} else {
+    // fallback
+    $returnparams['action'] = $action;
+}
+
+$returnurl = new moodle_url(local_autogroup_renderer::URL_COURSE_SETTINGS, $returnparams);
 $aborturl = new moodle_url(local_autogroup_renderer::URL_COURSE_MANAGE, array('courseid' => $courseid));
 
 if ($action == 'delete') {
@@ -82,6 +94,7 @@ if ($action == 'delete') {
 if ($form->is_cancelled()) {
     redirect($aborturl);
 }
+
 if ($data = $form->get_data()) {
 
     // Salva o nome personalizado do grupo no objeto groupset, se informado.
@@ -89,12 +102,10 @@ if ($data = $form->get_data()) {
         $groupset->customgroupname = trim($data->customgroupname);
     }
 
-    // Data relevant to both form types.
     $updategroupmembership = false;
     $cleanupold = isset($data->cleanupold) ? (bool)$data->cleanupold : true;
 
     if ($action == 'delete') {
-        // User has selected "dont group".
         $groupset->delete($DB, $cleanupold);
 
         $groupset = new domain\autogroup_set($DB);
@@ -102,7 +113,6 @@ if ($data = $form->get_data()) {
 
         $updategroupmembership = true;
     } else {
-
         $updated = false;
         $options = new stdClass();
         if (!empty($data->groupby) && $data->groupby != $groupset->grouping_by()) {
@@ -113,17 +123,15 @@ if ($data = $form->get_data()) {
             $options->delimiter = $data->delimitedby;
             $updated = true;
         }
-        // NOVO: Salva o filtro do campo groupby_filtervalue, se informado
         if (isset($data->groupby_filtervalue)) {
             $options->filtervalue = trim($data->groupby_filtervalue);
             $updated = true;
         }
 
-        if ($updated) {
-            // User has selected another option or filtro.
+        if ($updated || $action == 'add') {
+            // Ao criar ou atualizar opções.
             $groupset->set_options($options);
             $groupset->save($DB, $cleanupold);
-
             $updategroupmembership = true;
         }
 
@@ -142,11 +150,9 @@ if ($data = $form->get_data()) {
         }
     }
 
-    // Após salvar a configuração, processa os alunos já inscritos no curso para criar/atualizar os grupos!
-    // Busca todos os usuários do curso com papéis elegíveis e processa.
+    // Processa os alunos já inscritos no curso para criar/atualizar os grupos!
     $context = context_course::instance($courseid);
     $enrolledusers = get_enrolled_users($context, '', 0, 'u.*');
-
     foreach ($enrolledusers as $user) {
         $groupset->verify_user_group_membership($user, $DB, $context);
     }
@@ -158,6 +164,8 @@ if ($data = $form->get_data()) {
 echo $OUTPUT->header();
 if ($action == 'delete') {
     echo $OUTPUT->heading(get_string('delete'));
+} elseif ($action == 'add') {
+    echo $OUTPUT->heading(get_string('coursesettingsaddtitle', 'local_autogroup', $courseid));
 } else {
     echo $OUTPUT->heading(get_string('coursesettingstitle', 'local_autogroup', $courseid));
 }
