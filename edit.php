@@ -60,14 +60,17 @@ if ($gsid) {
     }
 }
 
-$returnparams = array('action' => $action, 'sortmodule' => $sortmodule);
+// Corrige: Sempre inclui courseid, gsid e sortmodule nos parâmetros de retorno.
+$returnparams = array(
+    'courseid' => $courseid,
+    'sortmodule' => $sortmodule,
+);
 if ($groupset->exists()) {
     $returnparams['gsid'] = $groupset->id;
-} else {
-    $returnparams['courseid'] = $courseid;
 }
+$returnparams['action'] = 'edit';
 
-$returnurl = new moodle_url(local_autogroup_renderer::URL_COURSE_SETTINGS, $returnparams);
+$returnurl = new moodle_url(local_autogroup_renderer::URL_COURSE_SETTINGS, array('courseid' => $courseid));
 $aborturl = new moodle_url(local_autogroup_renderer::URL_COURSE_MANAGE, array('courseid' => $courseid));
 
 if ($action == 'delete') {
@@ -137,6 +140,15 @@ if ($data = $form->get_data()) {
             $groupset->set_eligible_roles($newroles);
             $groupset->save($DB, $cleanupold);
         }
+    }
+
+    // Após salvar a configuração, processa os alunos já inscritos no curso para criar/atualizar os grupos!
+    // Busca todos os usuários do curso com papéis elegíveis e processa.
+    $context = context_course::instance($courseid);
+    $enrolledusers = get_enrolled_users($context, '', 0, 'u.*');
+
+    foreach ($enrolledusers as $user) {
+        $groupset->verify_user_group_membership($user, $DB, $context);
     }
 
     // Redireciona após salvar.
