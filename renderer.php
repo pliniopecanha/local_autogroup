@@ -16,11 +16,6 @@
 
 /**
  * autogroup local plugin
- *
- * A course object relates to a Moodle course and acts as a container
- * for multiple groups. Initialising a course object will automatically
- * load each autogroup group for that course into memory.
- *
  * @package    local_autogroup
  * @copyright  Mark Ward (me@moodlemark.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,22 +31,19 @@ class local_autogroup_renderer extends plugin_renderer_base {
 
     public function add_new_groupset($courseid) {
         $output = '';
-
         $urlparams = array('action' => 'add', 'courseid' => (int)$courseid);
         $newurl = new moodle_url(self::URL_COURSE_SETTINGS, $urlparams);
 
         $modules = local_autogroup_get_sort_module_list();
-
         $select = new single_select($newurl, 'sortmodule', $modules);
         $select->set_label(get_string('create', 'local_autogroup'));
-        $output .= $this->render($select);
 
+        $output .= $this->render($select);
         return $output;
     }
 
     public function intro_text($count = 0) {
         $output = '';
-
         $text = html_writer::tag('p', get_string('autogroupdescription', 'local_autogroup'));
 
         if (!$count) {
@@ -72,7 +64,6 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
 
         $data = array();
-
         foreach ($groupsets as $groupset) {
             $data[] = $this->groupsets_table_group($groupset);
         }
@@ -95,13 +86,13 @@ class local_autogroup_renderer extends plugin_renderer_base {
     private function groupsets_table_group(local_autogroup\domain\autogroup_set $groupset) {
         $row = array();
 
-        // Get the groupset type.
+        // Tipo (sort module)
         $row [] = ucfirst(local_autogroup_sanitise_sort_module_name($groupset->sortmodule));
 
-        // Get the grouping by text which is used in the edit screen.
+        // Agrupamento
         $row [] = ucfirst($groupset->grouping_by_text());
 
-        // Valor para filtro do campo agrupador
+        // Valor de filtro
         $filtervalue = '-';
         if (is_object($groupset->sortconfig) && isset($groupset->sortconfig->filtervalue)) {
             $filtervalue = $groupset->sortconfig->filtervalue;
@@ -113,24 +104,23 @@ class local_autogroup_renderer extends plugin_renderer_base {
         }
         $row[] = $filtervalue;
 
-        // Nome personalizado para grupo (nível de curso): prioriza valor do objeto, senão deixará vazio ou '-'.
+        // Nome personalizado do grupo
         $customgroupname = '-';
         if (property_exists($groupset, 'customgroupname') && !is_null($groupset->customgroupname) && trim($groupset->customgroupname) !== '') {
             $customgroupname = $groupset->customgroupname;
         }
         $row[] = (string)$customgroupname;
 
-        // Get the count of groups.
+        // Contagem de grupos
         $row [] = $groupset->get_group_count();
 
-        // Get the eligible roles.
+        // Papéis elegíveis
         $roles = $groupset->get_eligible_roles();
         $roles = role_fix_names($roles, null, ROLENAME_ORIGINAL);
         $roletext = implode(', ', $roles);
-        $row [] = $roletext;
+        $row[] = $roletext;
 
-        // Get the actions.
-        // Corrige: inclui courseid na URL das ações para evitar erro de parâmetro faltando.
+        // Ações (edit/delete) - URLs sempre com courseid/action/gsid
         $editurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'edit', 'courseid' => $groupset->courseid));
         $deleteurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'delete', 'courseid' => $groupset->courseid));
         $row[] =
