@@ -17,10 +17,6 @@
 /**
  * autogroup local plugin
  *
- * A course object relates to a Moodle course and acts as a container
- * for multiple groups. Initialising a course object will automatically
- * load each autogroup group for that course into memory.
- *
  * @package    local_autogroup
  * @copyright  Mark Ward (me@moodlemark.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,10 +27,6 @@ namespace local_autogroup\form;
 use local_autogroup\domain;
 use local_autogroup\form;
 
-/**
- * Class autogroup_set_settings
- * @package local_autogroup\form
- */
 class autogroup_set_settings extends form {
     /**
      * @type domain\autogroup_set
@@ -54,11 +46,10 @@ class autogroup_set_settings extends form {
         $this->autogroup_set = $this->get_submitted_data();
 
         $this->add_group_by_options();
-        // NOVO: adiciona campo de filtro logo após groupby
         $this->add_groupby_filtervalue_option();
         $this->add_field_delimiter_options();
         $this->add_role_options();
-        $this->add_custom_groupname_option(); // <-- ADICIONADO AQUI
+        $this->add_custom_groupname_option();
         $this->add_action_buttons();
     }
 
@@ -67,21 +58,18 @@ class autogroup_set_settings extends form {
      */
     private function add_group_by_options() {
         $mform = &$this->_form;
-
         $options = $this->_customdata->get_group_by_options();
-
         $mform->addElement('select', 'groupby', get_string('set_groupby', 'local_autogroup'), $options);
         $mform->setDefault('groupby', $this->_customdata->grouping_by());
 
         if ($this->_customdata->exists()) {
-            // Offer to preserve existing groups.
             $mform->addElement('selectyesno', 'cleanupold', get_string('cleanupold', 'local_autogroup'));
             $mform->setDefault('cleanupold', 1);
         }
     }
 
     /**
-     * Novo campo: valor de filtro para o campo Group by.
+     * Campo de filtro para o campo Group by.
      */
     private function add_groupby_filtervalue_option() {
         $mform = &$this->_form;
@@ -89,19 +77,13 @@ class autogroup_set_settings extends form {
         $mform->setType('groupby_filtervalue', PARAM_TEXT);
         $mform->addHelpButton('groupby_filtervalue', 'groupby_filtervalue', 'local_autogroup');
 
-        // Tenta preencher o valor salvo, se existir, em sortconfig.
         $filtervalue = '';
         if (!empty($this->_customdata->sortconfig) && isset($this->_customdata->sortconfig->filtervalue)) {
             $filtervalue = $this->_customdata->sortconfig->filtervalue;
         }
-        $mform->setDefault('groupby_filtervalue', $filtervalue); // Corrigido: Sempre preenche (se vazio, deixa em branco)
+        $mform->setDefault('groupby_filtervalue', $filtervalue);
     }
 
-    /**
-     * Add delimiter options if the sortmodule has the option.
-     *
-     * @return void
-     */
     protected function add_field_delimiter_options() {
         $delimiteroptions = $this->_customdata->get_delimited_by_options();
         if ($delimiteroptions) {
@@ -116,7 +98,6 @@ class autogroup_set_settings extends form {
      */
     private function add_role_options() {
         $mform = &$this->_form;
-
         $currentroles = $this->_customdata->get_eligible_roles();
 
         $mform->addElement('header', 'roles', get_string('set_roles', 'local_autogroup'));
@@ -134,7 +115,7 @@ class autogroup_set_settings extends form {
     }
 
     /**
-     * Adiciona o campo para nome personalizado de grupo a nível de curso.
+     * Campo para nome personalizado de grupo a nível de curso.
      */
     private function add_custom_groupname_option() {
         $mform = &$this->_form;
@@ -142,14 +123,8 @@ class autogroup_set_settings extends form {
         $mform->setType('customgroupname', PARAM_TEXT);
         $mform->addHelpButton('customgroupname', 'customgroupname_course', 'local_autogroup');
 
-        // Preenche o valor salvo, se existir.
         if (isset($this->_customdata->customgroupname)) {
             $mform->setDefault('customgroupname', $this->_customdata->customgroupname);
         }
-    }
-
-    public function extract_data() {
-        $data = array();
-        $this->set_data($data);
     }
 }
