@@ -95,9 +95,6 @@ class local_autogroup_renderer extends plugin_renderer_base {
     private function groupsets_table_group(local_autogroup\domain\autogroup_set $groupset) {
         $row = array();
 
-        // DEBUG: Exibe o objeto do groupset para análise (comente depois do teste)
-        echo "<pre style='color: red; background: #fff;'>"; var_dump($groupset); echo "</pre>";
-
         // Get the groupset type.
         $row [] = ucfirst(local_autogroup_sanitise_sort_module_name($groupset->sortmodule));
 
@@ -117,10 +114,9 @@ class local_autogroup_renderer extends plugin_renderer_base {
         $row[] = $filtervalue;
 
         // Nome personalizado para grupo (nível de curso): prioriza valor do objeto, senão deixará vazio ou '-'.
-        if (isset($groupset->customgroupname) && $groupset->customgroupname !== '' && $groupset->customgroupname !== null) {
+        $customgroupname = '-';
+        if (property_exists($groupset, 'customgroupname') && !is_null($groupset->customgroupname) && trim($groupset->customgroupname) !== '') {
             $customgroupname = $groupset->customgroupname;
-        } else {
-            $customgroupname = '-';
         }
         $row[] = (string)$customgroupname;
 
@@ -134,8 +130,9 @@ class local_autogroup_renderer extends plugin_renderer_base {
         $row [] = $roletext;
 
         // Get the actions.
-        $editurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'edit'));
-        $deleteurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'delete'));
+        // Corrige: inclui courseid na URL das ações para evitar erro de parâmetro faltando.
+        $editurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'edit', 'courseid' => $groupset->courseid));
+        $deleteurl = new moodle_url('/local/autogroup/edit.php', array('gsid' => $groupset->id, 'action' => 'delete', 'courseid' => $groupset->courseid));
         $row[] =
             $this->action_icon($editurl, new pix_icon('t/edit', get_string('edit'))) .
             $this->action_icon($deleteurl, new pix_icon('t/delete', get_string('delete')));
