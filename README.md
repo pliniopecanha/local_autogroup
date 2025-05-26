@@ -1,6 +1,6 @@
-## 📒 Histórico de alterações
+# 📒 Histórico de alterações
 
-Veja o [CHANGELOG.md](CHANGELOG.md) para uma lista detalhada das modificações e melhorias recentes.
+## Veja o [CHANGELOG.md](CHANGELOG.md) para uma lista detalhada das modificações e melhorias recentes.
 
 # AutoGroup Local Plugin
 
