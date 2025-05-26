@@ -1,3 +1,7 @@
+## 📒 Histórico de alterações
+
+Veja o [CHANGELOG.md](CHANGELOG.md) para uma lista detalhada das modificações e melhorias recentes.
+
 # AutoGroup Local Plugin
 
 Automatically assigns enrolled users on a course into groups
