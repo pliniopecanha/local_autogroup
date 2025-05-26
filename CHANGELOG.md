@@ -16,6 +16,13 @@
 
 ---
 
+### ⚠️ Atenção
+
+- O campo **Profile field** funciona perfeitamente como esperado para agrupar usuários.  
+- O campo **Custom profile field** ainda precisa de mais testes e pode demandar ajustes adicionais para pleno funcionamento.
+
+---
+
 ### English summary
 
 This fork includes:
@@ -27,3 +34,7 @@ This fork includes:
 - Form now displays and fills all relevant fields, including custom name and filter, in a clear and error-free manner.
 - Navigation parameters are handled robustly, ensuring smooth creation, editing, and deletion workflows.
 - Additional bug fixes and optimizations for Moodle 4.x compatibility.
+
+**⚠️ Notice:**  
+The **Profile field** works as expected for grouping users.  
+The **Custom profile field** option still requires further testing and adjustments.
