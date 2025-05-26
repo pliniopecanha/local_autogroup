@@ -36,72 +36,23 @@ use moodle_database;
 
 require_once(__DIR__ . "/../../../../group/lib.php");
 
-/**
- * Class group
- *
- * Wraps the standard Moodle group object with additional
- * helper functions.
- *
- * Save / create / update functions here refer to the core
- * Moodle functions in order to maintain event calls etc.
- *
- * @package local_autogroup\domain
- */
 class group extends domain {
-    /**
-     * An array of DB level attributes for a group
-     * used for handling stdclass object conversion.
-     *
-     * @var array
-     */
     protected $attributes = array(
         'id', 'courseid', 'idnumber', 'name', 'description', 'descriptionformat',
         'enrolmentkey', 'picture', 'timecreated', 'timemodified', 'visibility', 'participation'
     );
-    /**
-     * @var int
-     */
     protected $courseid = 0;
-    /**
-     * @var string
-     */
     protected $idnumber = '';
-    /**
-     * @var string
-     */
     protected $name = '';
-    /**
-     * @var string
-     */
     protected $description = '';
-    /**
-     * @var int
-     */
     protected $descriptionformat = 1;
-    /**
-     * @var string
-     */
     protected $enrolmentkey = '';
-    /**
-     * @var int
-     */
     protected $picture = 0;
-    /**
-     * @var int
-     */
     protected $timecreated = 0;
-    /**
-     * @var int
-     */
     protected $timemodified = 0;
-    /**
-     * List of members for this group
-     *
-     * @var array
-     */
     protected $visibility = 0;
     protected $participation = 1;
-    
+
     private $members;
 
     /**
@@ -121,10 +72,6 @@ class group extends domain {
         $this->get_members($db);
     }
 
-    /**
-     * @param $groupid
-     * @param \moodle_database $db
-     */
     private function load_from_database($groupid, \moodle_database $db) {
         $group = $db->get_record('groups', array('id' => $groupid));
         if ($this->validate_object($group)) {
@@ -132,10 +79,6 @@ class group extends domain {
         }
     }
 
-    /**
-     * @param stdClass $group
-     * @return bool
-     */
     private function validate_object($group) {
         if (!is_object($group)) {
             return false;
@@ -152,9 +95,6 @@ class group extends domain {
             && strstr($group->idnumber, 'autogroup|');
     }
 
-    /**
-     * @param \stdclass $group
-     */
     private function load_from_object(\stdclass $group) {
         foreach ($this->attributes as $attribute) {
             if (property_exists($group, $attribute)) {
@@ -163,9 +103,6 @@ class group extends domain {
         }
     }
 
-    /**
-     * @param \moodle_database $db
-     */
     private function get_members(\moodle_database $db) {
         $this->members = $db->get_records_menu('groups_members', array('groupid' => $this->id), 'id', 'id,userid');
     }
@@ -181,9 +118,10 @@ class group extends domain {
                 return false;
             }
         }
-
-        // User was not found as a member so will now make member a user.
         \groups_add_member($this->as_object()->id, $userid, 'local_autogroup');
+        // Atualiza membros após inclusão
+        global $DB;
+        $this->get_members($DB);
         return true;
     }
 
@@ -215,34 +153,30 @@ class group extends domain {
         foreach ($this->members as $member) {
             if ($member === $userid) {
                 \groups_remove_member($this->as_object()->id, $userid);
+                // Atualiza membros após remoção
+                global $DB;
+                $this->get_members($DB);
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * @return int
-     */
     public function membership_count() {
         return count($this->members);
     }
 
-   /**
-     * Adds this group to the application if it hasn't
-     * been created already
-     *
-     * @return void
+    /**
+     * Adds this group to the application if it hasn't been created already
      */
     public function create() {
         if ($this->id == 0) {
             // O nome do grupo já deve estar corretamente em $this->name!
-            // Não busca mais get_config, apenas usa o valor já setado.
             $groupobj = $this->as_object();
             $this->id = (int)\groups_create_group($groupobj);
         }
     }
-    
+
     /**
      * @param moodle_database $db
      * @return bool   whether this group is an autogroup or not
@@ -264,13 +198,7 @@ class group extends domain {
 
         return $db->record_exists('local_autogroup_set', array('id' => $groupsetid, 'courseid' => $this->courseid));
     }
-    /**
-     * @var int
-     */
 
-    /**
-     * @return bool   whether this group is an autogroup or not
-     */
     private function is_autogroup() {
         return strstr($this->idnumber, 'autogroup|');
     }
@@ -292,5 +220,4 @@ class group extends domain {
         }
         return \groups_update_group($this->as_object());
     }
-
 }
