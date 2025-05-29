@@ -18,7 +18,6 @@
 
 ### ⚠️ Atenção
 
-- O campo **Profile field** funciona perfeitamente como esperado para agrupar usuários.  
 - O campo **Custom profile field** ainda precisa de mais testes e pode demandar ajustes adicionais para pleno funcionamento.
 
 ---
@@ -39,7 +38,6 @@ This fork includes:
 
 ### ⚠️ Notice
 
-- The **Profile field** works as expected for grouping users.  
 - The **Custom profile field** option still requires further testing and adjustments.
 
 ---
