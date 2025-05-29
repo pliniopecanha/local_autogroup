@@ -30,6 +30,22 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = [
 
+        // Alterações em campos padrão do usuário (core profile fields como institution, department, etc)
+    [
+        'eventname'   => '\core\event\user_updated',
+        'callback'    => '\local_autogroup\event_handler::user_updated',
+    ],
+    // Alterações em campos customizados do perfil (user_info_field)
+    [
+        'eventname'   => '\core\event\user_info_field_updated',
+        'callback'    => '\local_autogroup\event_handler::user_updated',
+    ],
+    // (Opcional) Alterações em campos customizados por API
+    [
+        'eventname'   => '\core\event\user_info_field_created',
+        'callback'    => '\local_autogroup\event_handler::user_updated',
+    ],
+
     [
         'eventname' => '\core\event\user_enrolment_created',
         'callback' => '\local_autogroup\event_handler::create_adhoc_task',
