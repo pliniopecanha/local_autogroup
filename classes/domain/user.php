@@ -23,49 +23,28 @@
  * group which could be relevant for a user into memory.
  *
  * A user is also a group member; a membership register is also maintained
- * by this class.
- *
- * @package    local_autogroup
- * @copyright  Mark Ward (me@moodlemark.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_autogroup\domain;
 
-use local_autogroup\domain;
+defined('MOODLE_INTERNAL') || die();
+
+use stdClass;
+use moodle_database;
 use local_autogroup\exception;
 
-/**
- * Class user
- *
- * Wraps a standard moodle user with additional helper functions, linking
- * to the users courses and on to their autogroups.
- *
- * TODO: Some of the functionality here belongs in a repository class
- *
- * @package local_autogroup\domain
- */
-class user extends domain {
-    /**
-     * @var array
-     */
-    private $membership = [];
-    /**
-     * @var array
-     */
-    private $courses = [];
-    /**
-     * @var /stdclass
-     */
-    private $object;
+class user {
+    protected $id;
+    protected $object;
+    protected $membership = [];
+    protected $courses = [];
 
     /**
      * @param object|int $user
-     * @param \moodle_database $db
-     * @param int $onlyload a courseid to restrict loading to
-     * @throws exception\invalid_user_argument
+     * @param moodle_database $db
+     * @param int $onlyload
      */
-    public function __construct($user, \moodle_database $db, $onlyload = 0) {
+    public function __construct($user, moodle_database $db, $onlyload = 0) {
         // Get the data for this user.
         $this->parse_user_data($user, $db);
 
@@ -78,21 +57,38 @@ class user extends domain {
 
     /**
      * @param object|int $user
+     * @param moodle_database $db
      * @return bool
      * @throws exception\invalid_user_argument
      */
-    private function parse_user_data($user, \moodle_database $db) {
-        // TODO: restructure to allow usage of custom profile fields.
-
+    private function parse_user_data($user, moodle_database $db) {
         if (is_int($user) && $user > 0) {
             $this->id = $user;
             $this->object = $db->get_record('user', array('id' => $user));
+            // Carrega campos customizados no formato profile_field[shortname]
+            $fieldsInfo = $db->get_records('user_info_field', []);
+            $customfields = $db->get_records('user_info_data', array('userid' => $user));
+            $this->object->profile_field = [];
+            foreach ($customfields as $field) {
+                if (isset($fieldsInfo[$field->fieldid])) {
+                    $shortname = $fieldsInfo[$field->fieldid]->shortname;
+                    $this->object->profile_field[$shortname] = $field->data;
+                }
+            }
             return true;
-        }
-
-        if (is_object($user) && isset($user->id) && $user->id > 0) {
+        } else if (is_object($user) && isset($user->id) && $user->id > 0) {
             $this->id = $user->id;
             $this->object = $user;
+            // Garante que campos customizados estejam presentes
+            $fieldsInfo = $db->get_records('user_info_field', []);
+            $customfields = $db->get_records('user_info_data', array('userid' => $user->id));
+            $this->object->profile_field = [];
+            foreach ($customfields as $field) {
+                if (isset($fieldsInfo[$field->fieldid])) {
+                    $shortname = $fieldsInfo[$field->fieldid]->shortname;
+                    $this->object->profile_field[$shortname] = $field->data;
+                }
+            }
             return true;
         }
 
@@ -100,9 +96,9 @@ class user extends domain {
     }
 
     /**
-     * @param \moodle_database $db
+     * @param moodle_database $db
      */
-    private function get_group_membership(\moodle_database $db) {
+    private function get_group_membership(moodle_database $db) {
         $sql = "SELECT g.id, g.courseid" . PHP_EOL
             . "FROM {groups} g" . PHP_EOL
             . "LEFT JOIN {groups_members} gm" . PHP_EOL
@@ -120,9 +116,9 @@ class user extends domain {
     /**
      * Get courses for this user where an autogroup set has been added
      *
-     * @param \moodle_database $db
+     * @param moodle_database $db
      */
-    private function get_courses(\moodle_database $db, $onlyload = 0) {
+    private function get_courses(moodle_database $db, $onlyload = 0) {
         if ($onlyload < 1) {
             $sql = "SELECT e.courseid" . PHP_EOL
                 . "FROM {enrol} e" . PHP_EOL
@@ -150,10 +146,10 @@ class user extends domain {
     }
 
     /**
-     * @param \moodle_database $db
+     * @param moodle_database $db
      * @return bool
      */
-    public function verify_user_group_membership(\moodle_database $db) {
+    public function verify_user_group_membership(moodle_database $db) {
         $result = true;
         foreach ($this->courses as $course) {
             $result &= $course->verify_user_group_membership($this->object, $db);
